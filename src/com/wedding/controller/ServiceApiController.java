@@ -12,18 +12,18 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 import com.wedding.models.Service;
-import com.wedding.repository.ServiceRepository;
+import com.wedding.service.ServiceService;
 import com.wedding.utils.UrlConstant;
 
 @WebServlet({UrlConstant.URL_SERVICE, UrlConstant.URL_SERVICE_ADD, UrlConstant.URL_SERVICE_DELETE, UrlConstant.URL_SERVICE_UPDATE})
 public class ServiceApiController extends HttpServlet {
 
-	private ServiceRepository serviceRepository;
+	private ServiceService serviceService;
 	@Override
 	public void init() throws ServletException {
 		// TODO Auto-generated method stub
 		super.init();
-		serviceRepository = new ServiceRepository();
+		serviceService = new ServiceService();
 	}
 
 	@Override
@@ -31,11 +31,31 @@ public class ServiceApiController extends HttpServlet {
 		req.setCharacterEncoding("UTF-8");
 		resp.setCharacterEncoding("UTF-8");
 		resp.setContentType("application/json");
-		List<Service> services = serviceRepository.getAll();
+		List<Service> services = serviceService.getAllService();
 		Gson gson = new Gson();
 		String data = gson.toJson(services);
 		PrintWriter writer = resp.getWriter();
 		writer.write(data);
 		writer.flush();
 	}
+
+	@Override
+	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		super.doDelete(req, resp);
+	}
+
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		super.doPost(req, resp);
+	}
+
+	@Override
+	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		super.doPut(req, resp);
+	}
+	
+	
 }

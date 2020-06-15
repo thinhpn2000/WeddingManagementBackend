@@ -84,5 +84,114 @@ public class FoodRepository {
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
+		
+	}
+	
+	public Food getByIDInFood(int id) {
+		String query = "SELECT * FROM FOOD WHERE FOOD.foodID = ? AND NOT isDeleted";
+		Connection connection = MySqlConnection.getInstance().getConnection();
+		try {
+			PreparedStatement statement = connection.prepareStatement(query);
+			statement.setInt(1, id);
+			ResultSet res = statement.executeQuery();
+			Food food = new Food();
+			if (res.next()) {
+				food.setFoodID(res.getInt("foodID"));
+				food.setFoodName(res.getString("foodName"));
+				food.setFoodPrice(res.getInt("foodPrice"));
+				food.setFoodNote(res.getString("foodNote"));
+				food.setEndingDate(res.getString("endingDate"));
+			}
+			connection.close();
+			return food;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public Food getByIDInUpdatedFood(int id) {
+		String query = "SELECT FOOD.foodID,FOOD.foodName,UPDATEDFOOD.foodPrice, FOOD.foodNote, UPDATEDFOOD.endingDate FROM FOOD,UPDATEDFOOD WHERE UPDATEDFOOD.foodID=FOOD.foodID AND UPDATEDFOOD.ENDINGDATE IS NULL AND FOOD.foodID = ? AND NOT FOOD.isDeleted";
+		Connection connection = MySqlConnection.getInstance().getConnection();
+		try {
+			PreparedStatement statement = connection.prepareStatement(query);
+			statement.setInt(1, id);
+			ResultSet res = statement.executeQuery();
+			Food food = new Food();
+			if (res.next()) {
+				food.setFoodID(res.getInt("foodID"));
+				food.setFoodName(res.getString("foodName"));
+				food.setFoodPrice(res.getInt("foodPrice"));
+				food.setFoodNote(res.getString("foodNote"));
+				food.setEndingDate(res.getString("endingDate"));
+			}
+			connection.close();
+			return food;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public void updateOthersInFood(Food food) {
+		String query = "UPDATE FOOD SET foodName = ?, foodNote = ? WHERE foodID = ?";
+		Connection connection = MySqlConnection.getInstance().getConnection();
+		try {
+			PreparedStatement statement = connection.prepareStatement(query);
+			statement.setString(1, food.getFoodName());
+			statement.setString(2, food.getFoodNote());
+			statement.setInt(3, food.getFoodID());
+			statement.executeUpdate();
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void updateHasPriceInFood(Food food) {
+		String query = "UPDATE FOOD SET foodName = ?, foodNote = ?, endingDate = ? WHERE foodID = ?";
+		String queryInsertInUpdated = "INSERT INTO UPDATEDFOOD(foodID,foodPrice,startingDate,endingDate) VALUES (?,?,?,?)";
+		Connection connection = MySqlConnection.getInstance().getConnection();
+		try {
+			PreparedStatement statement = connection.prepareStatement(query);
+			statement.setString(1, food.getFoodName());
+			statement.setString(2, food.getFoodNote());
+			statement.setString(3, food.getStartingDate());
+			statement.setInt(4, food.getFoodID());
+			statement.executeUpdate();
+			statement = connection.prepareStatement(queryInsertInUpdated);
+			statement.setInt(1, food.getFoodID());
+			statement.setInt(2, food.getFoodPrice());
+			statement.setString(3, food.getStartingDate());
+			statement.setString(4, food.getEndingDate());
+			statement.executeUpdate();
+
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void updateHasPriceInUpdatedFood(Food food) {
+		updateOthersInFood(food);
+		String query = "UPDATE UPDATEDFOOD SET endingDate = ? WHERE foodID = ? AND endingDate IS NULL";
+		String queryInsertInUpdated = "INSERT INTO UPDATEDFOOD(foodID,foodPrice,startingDate,endingDate) VALUES (?,?,?,?)";
+		Connection connection = MySqlConnection.getInstance().getConnection();
+		try {
+			PreparedStatement statement = connection.prepareStatement(query);
+			statement.setString(1, food.getStartingDate());
+			statement.setInt(2, food.getFoodID());
+			statement.executeUpdate();
+			statement = connection.prepareStatement(queryInsertInUpdated);
+			statement.setInt(1, food.getFoodID());
+			statement.setInt(2, food.getFoodPrice());
+			statement.setString(3, food.getStartingDate());
+			statement.setString(4, food.getEndingDate());
+			statement.executeUpdate();
+
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 }
