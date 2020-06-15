@@ -103,30 +103,15 @@ public class FoodApiController extends HttpServlet {
 				req.setCharacterEncoding("UTF-8");
 				resp.setCharacterEncoding("UTF-8");
 				resp.setContentType("text/html");
-				String test = req.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-				System.out.println(test);
-				Food food = foodService.convertJSONtoFoodUpdate(test);
-				System.out.println(food.getFoodName());
-				System.out.println(food.getFoodPrice());
-//				BufferedReader br = new BufferedReader(new InputStreamReader(req.getInputStream()));
-//
-//				String data = br.readLine();
-//				System.out.println(data);
-////				int foodID = Integer.parseInt(req.getParameter("foodID"));
-////				String foodName = req.getParameter("foodName");
-////				int foodPrice = Integer.parseInt(req.getParameter("foodPrice"));
-////				String foodNote = req.getParameter("foodNote");
-////				String startingDate = java.time.LocalDate.now().toString();
-////				String endingDate = null;
-////
-////				Food food = new Food();
-////				food.setFoodID(foodID);
-////				food.setFoodName(foodName);
-////				food.setFoodPrice(foodPrice);
-////				food.setFoodNote(foodNote);
-////				food.setStartingDate(startingDate);
-////				food.setEndingDate(endingDate);
-////				foodService.updateFood(food);
+				String JSON = req.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+				Food food = foodService.convertJSONtoFoodUpdate(JSON);
+
+				String startingDate = java.time.LocalDate.now().toString();
+				String endingDate = null;
+
+				food.setStartingDate(startingDate);
+				food.setEndingDate(endingDate);
+				foodService.updateFood(food);
 				break;
 			default:
 				break;

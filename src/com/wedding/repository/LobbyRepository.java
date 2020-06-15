@@ -42,6 +42,50 @@ public class LobbyRepository {
 		return null;
 
 	}
+	public void addLobby(Lobby sanh) {
+		String query = "INSERT INTO LOBBY(lobbyName, lobbyType, maxTable) VALUES (?, ?, ?);";
+		Connection connection = MySqlConnection.getInstance().getConnection();
+		try {
+				PreparedStatement prep = connection.prepareStatement(query);
+				prep.setString(1, sanh.getLobbyName());
+				prep.setInt(2, sanh.getLobbyTypeID());
+				prep.setInt(3, sanh.getMaxTable());
+				prep.executeUpdate();
+				connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void delele(int id) {
+		Connection connection = MySqlConnection.getInstance().getConnection();
+		String query = "UPDATE LOBBY SET isDeleted = ? WHERE lobbyID = ?";
+		try {
+			PreparedStatement statement = connection.prepareStatement(query);
+			statement.setBoolean(1, true);
+			statement.setInt(2, id);
+			statement.executeUpdate();
+			connection.close();
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void update(Lobby sanh) {
+		Connection connection = MySqlConnection.getInstance().getConnection();
+		String query = "UPDATE LOBBY SET lobbyName = ?, maxTable = ?, lobbyType = ? WHERE lobbyID = ?";
+		try {
+			PreparedStatement prep = connection.prepareStatement(query);
+			prep.setString(1, sanh.getLobbyName());
+			prep.setInt(2, sanh.getMaxTable());
+			prep.setInt(3, sanh.getLobbyTypeID());
+			prep.setInt(4, sanh.getLobbyID());
+			prep.executeUpdate();
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public Lobby convertJSONtoLobbyUpdate(String json) {
 		Lobby lobby = gson.fromJson(json, Lobby.class);

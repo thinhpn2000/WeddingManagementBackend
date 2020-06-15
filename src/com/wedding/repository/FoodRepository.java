@@ -29,7 +29,7 @@ public class FoodRepository {
 				food.setFoodName(res.getString("foodName"));
 				food.setFoodPrice(res.getInt("foodPrice"));
 				food.setFoodNote(res.getString("foodNote"));
-		
+				food.setFromUpdatedFood(true);
 				foodList.add(food);
 			}
 			statement = connection.prepareStatement(queryinFood);
