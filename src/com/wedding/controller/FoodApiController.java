@@ -71,7 +71,7 @@ public class FoodApiController extends HttpServlet {
 				food.setFoodNote(foodNote);
 				food.setStartingDate(startingDate);
 				food.setEndingDate(endingDate);
-				foodService.addFood(food);;
+				foodService.addFood(food);
 				break;
 			default:
 				break;
@@ -88,7 +88,7 @@ public class FoodApiController extends HttpServlet {
 				resp.setContentType("text/html");
 
 				int foodID = Integer.parseInt(req.getParameter("id"));
-				foodService.deleteFood(foodID);;
+				foodService.deleteFood(foodID);
 				break;
 			default:
 				break;
@@ -105,6 +105,9 @@ public class FoodApiController extends HttpServlet {
 				resp.setContentType("text/html");
 				String test = req.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
 				System.out.println(test);
+				Food food = foodService.convertJSONtoFoodUpdate(test);
+				System.out.println(food.getFoodName());
+				System.out.println(food.getFoodPrice());
 //				BufferedReader br = new BufferedReader(new InputStreamReader(req.getInputStream()));
 //
 //				String data = br.readLine();

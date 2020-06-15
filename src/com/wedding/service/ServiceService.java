@@ -2,6 +2,7 @@ package com.wedding.service;
 
 import java.util.List;
 
+import com.wedding.models.Food;
 import com.wedding.models.Service;
 import com.wedding.repository.ServiceRepository;
 
@@ -54,5 +55,9 @@ public class ServiceService {
 			}
 			
 		}
+	}
+	
+	public Service convertJSONtoServiceUpdate(String json) {
+		return serviceRepository.convertJSONtoServiceUpdate(json);
 	}
 }

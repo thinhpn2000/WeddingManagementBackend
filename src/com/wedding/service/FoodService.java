@@ -55,4 +55,8 @@ public class FoodService {
 			}
 		}
 	}
+	
+	public Food convertJSONtoFoodUpdate(String json) {
+		return foodRepository.convertJSONtoFoodUpdate(json);
+	}
 }

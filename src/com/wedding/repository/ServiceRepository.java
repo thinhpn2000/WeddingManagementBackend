@@ -8,11 +8,13 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.Gson;
 import com.wedding.databaseconnection.MySqlConnection;
+import com.wedding.models.Food;
 import com.wedding.models.Service;
 
 public class ServiceRepository {
-
+	private Gson gson = new Gson();
 	public List<Service> getAll() {
 
 		String queryinService = "SELECT serviceID, serviceName, servicePrice FROM SERVICE WHERE NOT isDeleted AND endingDate IS NULL";
@@ -162,22 +164,7 @@ public class ServiceRepository {
 			e.printStackTrace();
 		}
 	}
-//	public void insertUpdatedService(Service service) {
-//		Connection connection = MySqlConnection.getInstance().getConnection();
-//		String query = "INSERT INTO UPDATEDSERVICE(serviceID, servicePrice, startingDate, endingDate) VALUES (?,?,?,?)";
-//		try {
-//			PreparedStatement statement = connection.prepareStatement(query);
-//			statement.setInt(1, service.getServiceID());
-//			statement.setInt(2, service.getServicePrice());
-//			statement.setString(3, service.getStartingDate());
-//			statement.setNull(4, Types.VARCHAR);
-//			statement.executeUpdate();
-//			connection.close();
-//		} catch(SQLException e) {
-//			e.printStackTrace();
-//		}
-//	}
-
+	
 	public void updateName(Service service) {
 		Connection connection = MySqlConnection.getInstance().getConnection();
 		String query = "UPDATE SERVICE SET serviceName = ? WHERE serviceID = ?";
@@ -190,5 +177,9 @@ public class ServiceRepository {
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	public Service convertJSONtoServiceUpdate(String json) {
+		Service service = gson.fromJson(json, Service.class);
+		return service;
 	}
 }

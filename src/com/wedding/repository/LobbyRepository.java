@@ -7,11 +7,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.Gson;
 import com.wedding.databaseconnection.MySqlConnection;
+import com.wedding.models.Food;
 import com.wedding.models.Lobby;
 
 public class LobbyRepository {
-
+	private Gson gson = new Gson();
 	public List<Lobby> getAll() {
 
 		String query = "SELECT lobbyID, lobbyName, lobbyTypeName, maxTable, LOBBY.isDeleted, minPrice, lobbyTypeID FROM TYPE_LOBBY, LOBBY WHERE LOBBY.lobbyType = TYPE_LOBBY.lobbyTypeID AND NOT LOBBY.isDeleted ORDER BY lobbyID ASC;";
@@ -39,5 +41,10 @@ public class LobbyRepository {
 		}
 		return null;
 
+	}
+	
+	public Lobby convertJSONtoLobbyUpdate(String json) {
+		Lobby lobby = gson.fromJson(json, Lobby.class);
+		return lobby;
 	}
 }

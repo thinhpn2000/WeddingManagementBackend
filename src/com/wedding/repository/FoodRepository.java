@@ -7,11 +7,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.Gson;
 import com.wedding.databaseconnection.MySqlConnection;
 import com.wedding.models.Food;
 
 public class FoodRepository {
-
+	private Gson gson = new Gson();
 	public List<Food> getAll() {
 
 		String queryinFood = "SELECT foodID, foodName, foodPrice, foodNote FROM FOOD WHERE NOT isDeleted AND endingDate IS NULL";
@@ -193,5 +194,10 @@ public class FoodRepository {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public Food convertJSONtoFoodUpdate(String json) {
+		Food food = gson.fromJson(json, Food.class);
+		return food;
 	}
 }
