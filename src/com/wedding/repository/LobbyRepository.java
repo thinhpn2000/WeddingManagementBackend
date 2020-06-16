@@ -1,5 +1,6 @@
 package com.wedding.repository;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,19 +10,17 @@ import java.util.List;
 
 import com.google.gson.Gson;
 import com.wedding.databaseconnection.MySqlConnection;
-import com.wedding.models.Food;
 import com.wedding.models.Lobby;
 
 public class LobbyRepository {
 	private Gson gson = new Gson();
+
 	public List<Lobby> getAll() {
-
-		String query = "SELECT lobbyID, lobbyName, lobbyTypeName, maxTable, LOBBY.isDeleted, minPrice, lobbyTypeID FROM TYPE_LOBBY, LOBBY WHERE LOBBY.lobbyType = TYPE_LOBBY.lobbyTypeID AND NOT LOBBY.isDeleted ORDER BY lobbyID ASC;";
-
+		String query = "{call getAllLobby()}";
 		Connection connection = MySqlConnection.getInstance().getConnection();
 		List<Lobby> lobbyList = new ArrayList<Lobby>();
 		try {
-			PreparedStatement statement = connection.prepareStatement(query);
+			CallableStatement statement = connection.prepareCall(query);
 			ResultSet res = statement.executeQuery();
 			while (res.next()) {
 				Lobby lobby = new Lobby();
@@ -42,51 +41,51 @@ public class LobbyRepository {
 		return null;
 
 	}
+
 	public void addLobby(Lobby sanh) {
-		String query = "INSERT INTO LOBBY(lobbyName, lobbyType, maxTable) VALUES (?, ?, ?);";
+		String query = "{call addLobby(?, ?, ?)}";
 		Connection connection = MySqlConnection.getInstance().getConnection();
 		try {
-				PreparedStatement prep = connection.prepareStatement(query);
-				prep.setString(1, sanh.getLobbyName());
-				prep.setInt(2, sanh.getLobbyTypeID());
-				prep.setInt(3, sanh.getMaxTable());
-				prep.executeUpdate();
-				connection.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void delele(int id) {
-		Connection connection = MySqlConnection.getInstance().getConnection();
-		String query = "UPDATE LOBBY SET isDeleted = ? WHERE lobbyID = ?";
-		try {
-			PreparedStatement statement = connection.prepareStatement(query);
-			statement.setBoolean(1, true);
-			statement.setInt(2, id);
+			CallableStatement statement = connection.prepareCall(query);
+			statement.setString(1, sanh.getLobbyName());
+			statement.setInt(2, sanh.getLobbyTypeID());
+			statement.setInt(3, sanh.getMaxTable());
 			statement.executeUpdate();
 			connection.close();
-		} catch(SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	public void update(Lobby sanh) {
+
+	public void delele(int id) {
 		Connection connection = MySqlConnection.getInstance().getConnection();
-		String query = "UPDATE LOBBY SET lobbyName = ?, maxTable = ?, lobbyType = ? WHERE lobbyID = ?";
+		String query = "{call deleteLobby(?)}";
 		try {
-			PreparedStatement prep = connection.prepareStatement(query);
-			prep.setString(1, sanh.getLobbyName());
-			prep.setInt(2, sanh.getMaxTable());
-			prep.setInt(3, sanh.getLobbyTypeID());
-			prep.setInt(4, sanh.getLobbyID());
-			prep.executeUpdate();
+			CallableStatement statement = connection.prepareCall(query);
+			statement.setInt(1, id);
+			statement.executeUpdate();
 			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
+	public void update(Lobby sanh) {
+		Connection connection = MySqlConnection.getInstance().getConnection();
+		String query = "{call updateLobby(?,?,?,?)}";
+		try {
+			CallableStatement statement = connection.prepareCall(query);
+			statement.setInt(1, sanh.getLobbyID());
+			statement.setString(2, sanh.getLobbyName());
+			statement.setInt(3, sanh.getLobbyTypeID());
+			statement.setInt(4, sanh.getMaxTable());
+			statement.executeUpdate();
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public Lobby convertJSONtoLobbyUpdate(String json) {
 		Lobby lobby = gson.fromJson(json, Lobby.class);
 		return lobby;

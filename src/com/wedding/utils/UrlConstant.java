@@ -2,7 +2,7 @@ package com.wedding.utils;
 
 public class UrlConstant {
 
-	// URL LOGIN/ LOGOUT
+		// URL LOGIN/ LOGOUT
 		public static final String URL_LOGIN = "/login";
 		public static final String URL_LOGOUT = "/logout";
 		
@@ -43,4 +43,6 @@ public class UrlConstant {
 //		public static final String URL_EMPLOYEE_FOOD = "/employee/food";
 //		public static final String URL_EMPLOYEE_SERVICE = "/employee/service";
 //		public static final String URL_EMPLOYEE_PAYMENT = "/employee/payment";
+		
+		public static final String URL_TYPELOBBY = "/typelobby";
 }

@@ -1,5 +1,6 @@
 package com.wedding.repository;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,13 +18,13 @@ public class ServiceRepository {
 	private Gson gson = new Gson();
 	public List<Service> getAll() {
 
-		String queryinService = "SELECT serviceID, serviceName, servicePrice FROM SERVICE WHERE NOT isDeleted AND endingDate IS NULL";
-		String queryinUpdatedService = "SELECT SERVICE.serviceID, SERVICE.serviceName, UPDATEDSERVICE.servicePrice FROM SERVICE, UPDATEDSERVICE WHERE NOT UPDATEDSERVICE.isDeleted AND  SERVICE.serviceID = UPDATEDSERVICE.serviceID AND UPDATEDSERVICE.endingDate IS NULL";
-
+		String queryinService = "{call getAllService()}";
+		String queryinUpdatedService = "{call getAllUpdatedService()}";
+		
 		Connection connection = MySqlConnection.getInstance().getConnection();
 		List<Service> serviceList = new ArrayList<Service>();
 		try {
-			PreparedStatement statement = connection.prepareStatement(queryinUpdatedService);
+			CallableStatement statement = connection.prepareCall(queryinUpdatedService);
 			ResultSet res = statement.executeQuery();
 			while (res.next()) {
 				Service service = new Service();
@@ -32,7 +33,7 @@ public class ServiceRepository {
 				service.setServicePrice(res.getInt("servicePrice"));
 				serviceList.add(service);
 			}
-			statement = connection.prepareStatement(queryinService);
+			statement = connection.prepareCall(queryinService);
 			res = statement.executeQuery();
 			while (res.next()) {
 				Service service = new Service();
@@ -51,10 +52,10 @@ public class ServiceRepository {
 	}
 
 	public void add(Service service) {
-		String query = "INSERT INTO SERVICE(serviceName,servicePrice,startingDate,endingDate) VALUES (?,?,?,?)";
+		String query = "{call addService(?,?,?,?)}";
 		Connection connection = MySqlConnection.getInstance().getConnection();
 		try {
-			PreparedStatement statement = connection.prepareStatement(query);
+			CallableStatement statement = connection.prepareCall(query);
 			statement.setString(1, service.getServiceName());
 			statement.setInt(2, service.getServicePrice());
 			statement.setString(3, service.getStartingDate());
@@ -68,17 +69,12 @@ public class ServiceRepository {
 	}
 	public void delele(int id) {
 		Connection connection = MySqlConnection.getInstance().getConnection();
-		String queryService = "UPDATE SERVICE SET isDeleted = ? WHERE serviceID = ?";
-		String queryUpdatedService = "UPDATE UPDATEDSERVICE SET isDeleted = ? WHERE serviceID = ?";
+		String query = "{call deleteService(?)}";
 		try {
-			PreparedStatement statement = connection.prepareStatement(queryService);
-			statement.setBoolean(1, true);
-			statement.setInt(2, id);
+			CallableStatement statement = connection.prepareCall(query);
+			statement.setInt(1, id);
 			statement.executeUpdate();
-			statement = connection.prepareStatement(queryUpdatedService);
-			statement.setBoolean(1, true);
-			statement.setInt(2, id);
-			statement.executeUpdate();
+			
 			connection.close();
 		} catch(SQLException e) {
 			e.printStackTrace();
@@ -86,11 +82,11 @@ public class ServiceRepository {
 	}
 	public Service getByIdInService(int id) {
 		Connection connection = MySqlConnection.getInstance().getConnection();
-		String query = "SELECT serviceName, servicePrice, endingDate FROM SERVICE WHERE serviceID = ?";
+		String query = "{call getByIdInService(?)}";
 		try {
-			PreparedStatement prep = connection.prepareStatement(query);
-			prep.setInt(1, id);
-			ResultSet res = prep.executeQuery();
+			CallableStatement statement = connection.prepareCall(query);
+			statement.setInt(1, id);
+			ResultSet res = statement.executeQuery();
 			Service service = new Service();
 			if (res.next()) {
 				service.setServiceName(res.getString("serviceName"));
@@ -106,11 +102,11 @@ public class ServiceRepository {
 	}
 	public Service getByIdInUpdatedService(int id) {
 		Connection connection = MySqlConnection.getInstance().getConnection();
-		String query = "SELECT servicePrice FROM UPDATEDSERVICE WHERE serviceID = ? AND endingDate is null";
+		String query = "{call getByIdInUpdatedService(?)}";
 		try {
-			PreparedStatement prep = connection.prepareStatement(query);
-			prep.setInt(1, id);
-			ResultSet res = prep.executeQuery();
+			CallableStatement statement = connection.prepareCall(query);
+			statement.setInt(1, id);
+			ResultSet res = statement.executeQuery();
 			Service service = new Service();
 			if (res.next()) {
 				service.setServicePrice(res.getInt("servicePrice"));
@@ -124,20 +120,15 @@ public class ServiceRepository {
 	}
 	public void updateEndingService(Service service) {
 		Connection connection = MySqlConnection.getInstance().getConnection();
-		String queryUpdate = "UPDATE SERVICE SET endingDate = ? WHERE serviceID = ?";
-		String queryInsert = "INSERT INTO UPDATEDSERVICE(serviceID, servicePrice, startingDate, endingDate) VALUES (?,?,?,?)";
+		String query = "{call updateEndingService(?,?,?,?)}";
 		try {
-			PreparedStatement statement = connection.prepareStatement(queryUpdate);
-			statement.setString(1, service.getStartingDate());
-			statement.setInt(2, service.getServiceID());
-			statement.executeUpdate();
-			
-			statement = connection.prepareStatement(queryInsert);
+			CallableStatement statement = connection.prepareCall(query);
 			statement.setInt(1, service.getServiceID());
 			statement.setInt(2, service.getServicePrice());
 			statement.setString(3, service.getStartingDate());
 			statement.setNull(4, Types.VARCHAR);
 			statement.executeUpdate();
+			
 			connection.close();
 		} catch(SQLException e) {
 			e.printStackTrace();
@@ -145,19 +136,14 @@ public class ServiceRepository {
 	}
 	public void updateEndingUpdatedService(Service service) {
 		Connection connection = MySqlConnection.getInstance().getConnection();
-		String queryUpdate = "UPDATE UPDATEDSERVICE SET endingDate = ? WHERE serviceID = ? AND endingDate IS NULL";
-		String queryInsert = "INSERT INTO UPDATEDSERVICE(serviceID, servicePrice, startingDate, endingDate) VALUES (?,?,?,?)";
+		String query = "{call updateEndingUpdatedService(?,?,?,?)}";
 		try {
-			PreparedStatement statement = connection.prepareStatement(queryUpdate);
-			statement.setString(1, service.getStartingDate());
-			statement.setInt(2, service.getServiceID());
-			statement.executeUpdate();
-			
-			statement = connection.prepareStatement(queryInsert);
+			CallableStatement statement = connection.prepareCall(query);
 			statement.setInt(1, service.getServiceID());
 			statement.setInt(2, service.getServicePrice());
 			statement.setString(3, service.getStartingDate());
 			statement.setNull(4, Types.VARCHAR);
+			
 			statement.executeUpdate();
 			connection.close();
 		} catch(SQLException e) {
@@ -167,11 +153,12 @@ public class ServiceRepository {
 	
 	public void updateName(Service service) {
 		Connection connection = MySqlConnection.getInstance().getConnection();
-		String query = "UPDATE SERVICE SET serviceName = ? WHERE serviceID = ?";
+		String query = "{call updateNameService(?,?)}";
 		try {
-			PreparedStatement statement = connection.prepareStatement(query);
-			statement.setString(1, service.getServiceName());
-			statement.setInt(2, service.getServiceID());
+			CallableStatement statement = connection.prepareCall(query);
+			statement.setInt(1, service.getServiceID());
+			statement.setString(2, service.getServiceName());
+			
 			statement.executeUpdate();
 			connection.close();
 		} catch(SQLException e) {
