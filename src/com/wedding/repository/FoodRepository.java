@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.google.gson.Gson;
 import com.wedding.databaseconnection.MySqlConnection;
+import com.wedding.dto.FoodPrice;
 import com.wedding.models.Food;
 
 public class FoodRepository {
@@ -186,5 +187,36 @@ public class FoodRepository {
 	public Food convertJSONtoFoodUpdate(String json) {
 		Food food = gson.fromJson(json, Food.class);
 		return food;
+	}
+	public List<FoodPrice> getListFoodAndPrice() {
+		List<FoodPrice> foodAndPriceList = new ArrayList<FoodPrice>();
+		String queryInFood = "SELECT foodID,foodPrice FROM FOOD WHERE endingDate is NULL and not isDeleted";
+		String queryInUpdatedFood = "SELECT foodID,foodPrice FROM UPDATEDFOOD WHERE endingDate is NULL and not isDeleted";
+		Connection connection = MySqlConnection.getInstance().getConnection();
+		try {
+			PreparedStatement statement = connection.prepareStatement(queryInFood);
+			ResultSet res = statement.executeQuery();
+			while (res.next()) {
+				FoodPrice foodAndprice = new FoodPrice();
+				foodAndprice.setFoodID(res.getInt("foodID"));
+				foodAndprice.setFoodPrice(res.getInt("foodPrice"));
+		
+				foodAndPriceList.add(foodAndprice);
+			}
+			statement = connection.prepareStatement(queryInUpdatedFood);
+			res = statement.executeQuery();
+			while (res.next()) {
+				FoodPrice foodAndprice = new FoodPrice();
+				foodAndprice.setFoodID(res.getInt("foodID"));
+				foodAndprice.setFoodPrice(res.getInt("foodPrice"));
+		
+				foodAndPriceList.add(foodAndprice);
+			}
+			connection.close();
+			return foodAndPriceList;
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

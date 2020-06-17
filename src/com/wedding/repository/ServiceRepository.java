@@ -11,7 +11,7 @@ import java.util.List;
 
 import com.google.gson.Gson;
 import com.wedding.databaseconnection.MySqlConnection;
-import com.wedding.models.Food;
+import com.wedding.dto.ServicePrice;
 import com.wedding.models.Service;
 
 public class ServiceRepository {
@@ -169,4 +169,36 @@ public class ServiceRepository {
 		Service service = gson.fromJson(json, Service.class);
 		return service;
 	}
+	
+	public List<ServicePrice> getListServiceAndPrice() {
+		List<ServicePrice> serviceAndPriceList = new ArrayList<ServicePrice>();
+		String queryInService = "SELECT serviceID,servicePrice FROM SERVICE WHERE endingDate is NULL and not isDeleted";
+		String queryInUpdatedService = "SELECT serviceID,servicePrice FROM UPDATEDSERVICE WHERE endingDate is NULL and not isDeleted";
+		Connection connection = MySqlConnection.getInstance().getConnection();
+		try {
+			PreparedStatement statement = connection.prepareStatement(queryInService);
+			ResultSet res = statement.executeQuery();
+			while (res.next()) {
+				ServicePrice serviceAndprice = new ServicePrice();
+				serviceAndprice.setServiceID(res.getInt("serviceID"));
+				serviceAndprice.setServicePrice(res.getInt("servicePrice"));
+		
+				serviceAndPriceList.add(serviceAndprice);
+			}
+			statement = connection.prepareStatement(queryInUpdatedService);
+			res = statement.executeQuery();
+			while (res.next()) {
+				ServicePrice serviceAndprice = new ServicePrice();
+				serviceAndprice.setServiceID(res.getInt("serviceID"));
+				serviceAndprice.setServicePrice(res.getInt("servicePrice"));
+		
+				serviceAndPriceList.add(serviceAndprice);
+			}
+			connection.close();
+			return serviceAndPriceList;
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	} 
 }
