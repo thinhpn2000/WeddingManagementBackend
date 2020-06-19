@@ -6,6 +6,7 @@ import com.wedding.dto.FoodPrice;
 import com.wedding.dto.ServicePrice;
 import com.wedding.models.Reservation;
 import com.wedding.models.ServiceReservation;
+import com.wedding.models.ReservationUpdate;
 import com.wedding.repository.FoodRepository;
 import com.wedding.repository.ReservationRepository;
 import com.wedding.repository.ServiceRepository;
@@ -66,4 +67,17 @@ public class ReservationService {
 		}
 		return result;
 	}
+	
+	public List<ReservationUpdate> getAllWedding(){
+		return reservationRepository.getAll();
+	}
+	
+	public ReservationUpdate getReservationById(int id) {
+		return reservationRepository.getReservationById(id);
+	}
+	
+	public void deleteReservation(int id) {
+		reservationRepository.delete(id);
+	}
+	
 }
