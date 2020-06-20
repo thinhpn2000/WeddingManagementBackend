@@ -119,6 +119,37 @@ public class ReservationRepository {
 				reservationUpdate.add(reservation);
 				
 			}
+			for(ReservationUpdate reservationRepresent : reservationUpdate) {
+				query = "SELECT FOOD_INVOICE.foodID, price, foodName FROM FOOD_INVOICE, FOOD WHERE FOOD.foodID = FOOD_INVOICE.foodID AND weddingID = ? AND NOT FOOD_INVOICE.isDeleted";
+				List<FoodPrice> foodAndprices = new ArrayList<FoodPrice>();
+				statement = connection.prepareStatement(query);
+				statement.setInt(1, reservationRepresent.getWeddingID());
+				result = statement.executeQuery();
+				while(result.next()) {
+					FoodPrice foodAndprice = new FoodPrice();
+					foodAndprice.setFoodID(result.getInt("foodID"));
+					foodAndprice.setFoodPrice(result.getInt("price"));
+					foodAndprice.setFoodName(result.getString("foodName"));
+					foodAndprices.add(foodAndprice);
+				}
+				reservationRepresent.setListFood(foodAndprices);
+				
+				query = "SELECT SERVICE_INVOICE.serviceID, price, serviceQuantity, serviceName FROM SERVICE_INVOICE, SERVICE WHERE SERVICE.serviceID = SERVICE_INVOICE.serviceID AND weddingID = ? AND NOT SERVICE_INVOICE.isDeleted";
+				statement = connection.prepareStatement(query);
+				statement.setInt(1, reservationRepresent.getWeddingID());
+				result = statement.executeQuery();
+				List<ServicePrice> serviceAndprices = new ArrayList<ServicePrice>();
+				while(result.next()) {
+					ServicePrice serviceAndprice = new ServicePrice();
+					serviceAndprice.setServiceID(result.getInt("serviceID"));
+					serviceAndprice.setServiceQuantity(result.getInt("serviceQuantity"));
+					serviceAndprice.setServicePrice(result.getInt("price"));
+					serviceAndprice.setServiceName(result.getString("serviceName"));
+					serviceAndprice.setService1Price(serviceAndprice.getServicePrice() / serviceAndprice.getServiceQuantity());
+					serviceAndprices.add(serviceAndprice);
+				}			
+				reservationRepresent.setListServicePrice(serviceAndprices);
+			}
 			return reservationUpdate;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
