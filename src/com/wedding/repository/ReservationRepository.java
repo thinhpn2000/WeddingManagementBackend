@@ -129,7 +129,7 @@ public class ReservationRepository {
 	
 	public ReservationUpdate getReservationById(int id) {
 		ReservationUpdate reservation = new ReservationUpdate();
-		String query = "SELECT WEDDING.*, TYPE_SHIFT.shiftTypeName, LOBBY.lobbyName  FROM TYPE_SHIFT,WEDDING,LOBBY WHERE shift = shiftTypeID AND WEDDING.lobbyID = LOBBY.lobbyID AND NOT WEDDING.isDeleted AND weddingID = ?";
+		String query = "SELECT WEDDING.*, TYPE_SHIFT.shiftTypeName, LOBBY.lobbyName, LOBBY.maxTable  FROM TYPE_SHIFT,WEDDING,LOBBY WHERE shift = shiftTypeID AND WEDDING.lobbyID = LOBBY.lobbyID AND NOT WEDDING.isDeleted AND weddingID = ?";
 		Connection connection = MySqlConnection.getInstance().getConnection();
 		try {
 			PreparedStatement statement = connection.prepareStatement(query);
@@ -158,9 +158,10 @@ public class ReservationRepository {
 				reservation.setWeddingID(result.getInt("weddingID"));
 				reservation.setLobbyName(result.getString("lobbyName"));
 				reservation.setShiftTypeName(result.getString("shiftTypeName"));
+				reservation.setMaxTable(result.getInt("maxTable"));
 				
 			}
-			query = "SELECT foodID, price FROM FOOD_INVOICE WHERE weddingID = ? AND NOT isDeleted";
+			query = "SELECT FOOD_INVOICE.foodID, price, foodName FROM FOOD_INVOICE, FOOD WHERE FOOD.foodID = FOOD_INVOICE.foodID AND weddingID = ? AND NOT FOOD_INVOICE.isDeleted";
 			List<FoodPrice> foodAndprices = new ArrayList<FoodPrice>();
 			statement = connection.prepareStatement(query);
 			statement.setInt(1, id);
@@ -169,11 +170,12 @@ public class ReservationRepository {
 				FoodPrice foodAndprice = new FoodPrice();
 				foodAndprice.setFoodID(result.getInt("foodID"));
 				foodAndprice.setFoodPrice(result.getInt("price"));
+				foodAndprice.setFoodName(result.getString("foodName"));
 				foodAndprices.add(foodAndprice);
 			}
 			reservation.setListFood(foodAndprices);
 			
-			query = "SELECT serviceID, price, serviceQuantity FROM SERVICE_INVOICE WHERE weddingID = ? AND NOT isDeleted";
+			query = "SELECT SERVICE_INVOICE.serviceID, price, serviceQuantity, serviceName FROM SERVICE_INVOICE, SERVICE WHERE SERVICE.serviceID = SERVICE_INVOICE.serviceID AND weddingID = ? AND NOT SERVICE_INVOICE.isDeleted";
 			statement = connection.prepareStatement(query);
 			statement.setInt(1, id);
 			result = statement.executeQuery();
@@ -183,6 +185,7 @@ public class ReservationRepository {
 				serviceAndprice.setServiceID(result.getInt("serviceID"));
 				serviceAndprice.setServiceQuantity(result.getInt("serviceQuantity"));
 				serviceAndprice.setServicePrice(result.getInt("price"));
+				serviceAndprice.setServiceName(result.getString("serviceName"));
 				serviceAndprice.setService1Price(serviceAndprice.getServicePrice() / serviceAndprice.getServiceQuantity());
 				serviceAndprices.add(serviceAndprice);
 			}			

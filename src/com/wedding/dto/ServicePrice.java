@@ -5,19 +5,39 @@ public class ServicePrice {
 	private int serviceQuantity;
 	private int servicePrice;
 	private int service1Price;
+	private String serviceName;
 	
 	public ServicePrice() {}
 	
 	
 
 
-	public ServicePrice(int serviceID, int serviceQuantity, int servicePrice, int service1Price) {
+
+	public ServicePrice(int serviceID, int serviceQuantity, int servicePrice, int service1Price, String serviceName) {
 		super();
 		this.serviceID = serviceID;
 		this.serviceQuantity = serviceQuantity;
 		this.servicePrice = servicePrice;
 		this.service1Price = service1Price;
+		this.serviceName = serviceName;
 	}
+
+
+
+
+
+	public String getServiceName() {
+		return serviceName;
+	}
+
+
+
+
+
+	public void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
+	}
+
 
 
 

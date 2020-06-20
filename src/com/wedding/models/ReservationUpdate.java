@@ -36,6 +36,7 @@ public class ReservationUpdate {
 	private int weddingID;
 	private String shiftTypeName;
 	private int weddingStatus;
+	private int maxTable;
 
 	public ReservationUpdate() {
 	}
@@ -65,6 +66,20 @@ public class ReservationUpdate {
 	public void setListServicePrice(List<ServicePrice> listServicePrice) {
 		this.listServicePrice = listServicePrice;
 	}
+	
+	
+
+
+
+	public int getMaxTable() {
+		return maxTable;
+	}
+
+
+
+	public void setMaxTable(int maxTable) {
+		this.maxTable = maxTable;
+	}
 
 
 
@@ -72,7 +87,7 @@ public class ReservationUpdate {
 			int reservedTable, int tablePrice, int totalServicePrice, int totalTablePrice, int totalWeddingPrice,
 			int deposit, int balance, int shift, String reservationDate, String weddingDate, List<FoodPrice> listFood,
 			List<ServicePrice> listServicePrice, String lobbyName, int weddingID, String shiftTypeName,
-			int weddingStatus) {
+			int weddingStatus, int maxTable) {
 		super();
 		this.groom = groom;
 		this.bride = bride;
@@ -96,6 +111,7 @@ public class ReservationUpdate {
 		this.weddingID = weddingID;
 		this.shiftTypeName = shiftTypeName;
 		this.weddingStatus = weddingStatus;
+		this.maxTable = maxTable;
 	}
 
 
