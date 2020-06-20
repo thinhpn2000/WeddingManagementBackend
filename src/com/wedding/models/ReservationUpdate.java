@@ -37,10 +37,45 @@ public class ReservationUpdate {
 	private String shiftTypeName;
 	private int weddingStatus;
 	private int maxTable;
+	private int minPrice;
 
 	public ReservationUpdate() {
 	}
 	
+	
+
+	public ReservationUpdate(String groom, String bride, String phone, int lobbyID, int userID, int tableQuantity,
+			int reservedTable, int tablePrice, int totalServicePrice, int totalTablePrice, int totalWeddingPrice,
+			int deposit, int balance, int shift, String reservationDate, String weddingDate, List<FoodPrice> listFood,
+			List<ServicePrice> listServicePrice, String lobbyName, int weddingID, String shiftTypeName,
+			int weddingStatus, int maxTable, int minPrice) {
+		super();
+		this.groom = groom;
+		this.bride = bride;
+		this.phone = phone;
+		this.lobbyID = lobbyID;
+		this.userID = userID;
+		this.tableQuantity = tableQuantity;
+		this.reservedTable = reservedTable;
+		this.tablePrice = tablePrice;
+		this.totalServicePrice = totalServicePrice;
+		this.totalTablePrice = totalTablePrice;
+		this.totalWeddingPrice = totalWeddingPrice;
+		this.deposit = deposit;
+		this.balance = balance;
+		this.shift = shift;
+		this.reservationDate = reservationDate;
+		this.weddingDate = weddingDate;
+		this.listFood = listFood;
+		this.listServicePrice = listServicePrice;
+		this.lobbyName = lobbyName;
+		this.weddingID = weddingID;
+		this.shiftTypeName = shiftTypeName;
+		this.weddingStatus = weddingStatus;
+		this.maxTable = maxTable;
+		this.minPrice = minPrice;
+	}
+
 
 
 	public List<FoodPrice> getListFood() {
@@ -82,36 +117,18 @@ public class ReservationUpdate {
 	}
 
 
+	
 
-	public ReservationUpdate(String groom, String bride, String phone, int lobbyID, int userID, int tableQuantity,
-			int reservedTable, int tablePrice, int totalServicePrice, int totalTablePrice, int totalWeddingPrice,
-			int deposit, int balance, int shift, String reservationDate, String weddingDate, List<FoodPrice> listFood,
-			List<ServicePrice> listServicePrice, String lobbyName, int weddingID, String shiftTypeName,
-			int weddingStatus, int maxTable) {
-		super();
-		this.groom = groom;
-		this.bride = bride;
-		this.phone = phone;
-		this.lobbyID = lobbyID;
-		this.userID = userID;
-		this.tableQuantity = tableQuantity;
-		this.reservedTable = reservedTable;
-		this.tablePrice = tablePrice;
-		this.totalServicePrice = totalServicePrice;
-		this.totalTablePrice = totalTablePrice;
-		this.totalWeddingPrice = totalWeddingPrice;
-		this.deposit = deposit;
-		this.balance = balance;
-		this.shift = shift;
-		this.reservationDate = reservationDate;
-		this.weddingDate = weddingDate;
-		this.listFood = listFood;
-		this.listServicePrice = listServicePrice;
-		this.lobbyName = lobbyName;
-		this.weddingID = weddingID;
-		this.shiftTypeName = shiftTypeName;
-		this.weddingStatus = weddingStatus;
-		this.maxTable = maxTable;
+
+
+	public int getMinPrice() {
+		return minPrice;
+	}
+
+
+
+	public void setMinPrice(int minPrice) {
+		this.minPrice = minPrice;
 	}
 
 

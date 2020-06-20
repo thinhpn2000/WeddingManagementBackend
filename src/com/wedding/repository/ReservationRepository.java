@@ -160,7 +160,7 @@ public class ReservationRepository {
 	
 	public ReservationUpdate getReservationById(int id) {
 		ReservationUpdate reservation = new ReservationUpdate();
-		String query = "SELECT WEDDING.*, TYPE_SHIFT.shiftTypeName, LOBBY.lobbyName, LOBBY.maxTable  FROM TYPE_SHIFT,WEDDING,LOBBY WHERE shift = shiftTypeID AND WEDDING.lobbyID = LOBBY.lobbyID AND NOT WEDDING.isDeleted AND weddingID = ?";
+		String query = "SELECT WEDDING.*, TYPE_SHIFT.shiftTypeName, LOBBY.lobbyName, LOBBY.maxTable, minPrice  FROM TYPE_SHIFT,WEDDING,LOBBY,TYPE_LOBBY WHERE shift = shiftTypeID AND WEDDING.lobbyID = LOBBY.lobbyID AND LOBBY.lobbyType = TYPE_LOBBY.lobbyTypeID AND NOT WEDDING.isDeleted AND weddingID = ?";
 		Connection connection = MySqlConnection.getInstance().getConnection();
 		try {
 			PreparedStatement statement = connection.prepareStatement(query);
@@ -190,7 +190,7 @@ public class ReservationRepository {
 				reservation.setLobbyName(result.getString("lobbyName"));
 				reservation.setShiftTypeName(result.getString("shiftTypeName"));
 				reservation.setMaxTable(result.getInt("maxTable"));
-				
+				reservation.setMinPrice(result.getInt("minPrice"));
 			}
 			query = "SELECT FOOD_INVOICE.foodID, price, foodName FROM FOOD_INVOICE, FOOD WHERE FOOD.foodID = FOOD_INVOICE.foodID AND weddingID = ? AND NOT FOOD_INVOICE.isDeleted";
 			List<FoodPrice> foodAndprices = new ArrayList<FoodPrice>();
