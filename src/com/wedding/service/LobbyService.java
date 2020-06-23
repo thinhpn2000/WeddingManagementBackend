@@ -38,4 +38,7 @@ public class LobbyService {
 		lobbyRepository.update(sanh);
 	}
 
+	public List<Lobby> checkLobby(String weddingDate, int shift) {
+		return lobbyRepository.checkLobby(weddingDate, shift);
+	}
 }

@@ -90,4 +90,31 @@ public class LobbyRepository {
 		Lobby lobby = gson.fromJson(json, Lobby.class);
 		return lobby;
 	}
+	public List<Lobby> checkLobby(String weddingDate, int shift) {
+		List<Lobby> listLobby = new ArrayList<Lobby>();
+		Connection connection = MySqlConnection.getInstance().getConnection();
+		String query = "SELECT LOBBY.* , lobbyTypeName, minPrice FROM LOBBY, TYPE_LOBBY WHERE lobbyType = lobbyTypeID AND NOT LOBBY.isDeleted AND lobbyID NOT IN (SELECT lobbyID FROM WEDDING WHERE shift = ? AND weddingDate = ?);";
+		try {
+			PreparedStatement statement = connection.prepareStatement(query);
+			statement.setInt(1, shift);
+			statement.setString(2, weddingDate);
+			ResultSet result = statement.executeQuery();
+			while(result.next()) {
+				Lobby lobby = new Lobby();
+				lobby.setLobbyID(result.getInt("lobbyID"));
+				lobby.setLobbyName(result.getString("lobbyName"));
+				lobby.setLobbyTypeID(result.getInt("lobbyType"));
+				lobby.setLobbyType(result.getString("lobbyTypeName"));
+				lobby.setMaxTable(result.getInt("maxTable"));
+				lobby.setMinPrice(result.getInt("minPrice"));
+				listLobby.add(lobby);
+				}
+			return listLobby;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
 }

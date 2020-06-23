@@ -11,6 +11,7 @@ public class UrlConstant {
 		public static final String URL_LOBBY_ADD = "/lobby/add";
 		public static final String URL_LOBBY_DELETE = "/lobby/delete";
 		public static final String URL_LOBBY_UPDATE = "/lobby/update";
+		public static final String URL_LOBBY_CHECK = "/lobby/check";
 		
 		// URL FOOD
 		public static final String URL_FOOD = "/food";
