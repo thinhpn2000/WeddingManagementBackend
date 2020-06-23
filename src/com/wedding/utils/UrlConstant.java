@@ -37,6 +37,7 @@ public class UrlConstant {
 		public static final String URL_EMPLOYEE_ADD = "/employee/add";
 		public static final String URL_EMPLOYEE_UPDATE = "/employee/update";
 		public static final String URL_EMPLOYEE_RESETPASSWORD = "/employee/resetpassword";
+		public static final String URL_UPDATEPASSWORD = "/updatepassword";
 //		public static final String URL_MANAGER_LOBBY = "/manager/lobby";
 //		public static final String URL_MANAGER_FOOD = "/manager/food";
 //		public static final String URL_MANAGER_SERVICE = "/manager/service";
@@ -54,4 +55,5 @@ public class UrlConstant {
 //		public static final String URL_EMPLOYEE_PAYMENT = "/employee/payment";
 		
 		public static final String URL_TYPELOBBY = "/typelobby";
+		
 }

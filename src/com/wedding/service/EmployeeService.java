@@ -2,6 +2,8 @@ package com.wedding.service;
 
 import java.util.List;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import com.wedding.models.Employee;
 import com.wedding.repository.EmployeeRepository;
 
@@ -25,6 +27,10 @@ public class EmployeeService {
 		employeeRepository.resetpassword(id);
 	}
 	public void addEmployee(Employee employee) {
+	
+		String password = "1";
+		String encodePassword = BCrypt.hashpw(password, BCrypt.gensalt(13));
+		employee.setPassword(encodePassword);
 		employeeRepository.add(employee);
 	}
 	public Employee convertJSONToEmployee(String JSON) {
@@ -32,6 +38,9 @@ public class EmployeeService {
 	}
 	public void updateEmployee(Employee employee) {
 		employeeRepository.update(employee);
+	}
+	public Employee getByUsername(String username) {
+		return employeeRepository.getUserByUsername(username);
 	}
 	
 }

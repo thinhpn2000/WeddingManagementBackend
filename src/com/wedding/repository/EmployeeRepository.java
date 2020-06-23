@@ -107,7 +107,7 @@ public class EmployeeRepository {
 			PreparedStatement statement = connection.prepareStatement(query);
 			statement.setString(1, employee.getFullname());
 			statement.setString(2, employee.getUsername());
-			statement.setString(3, "1");
+			statement.setString(3, employee.getPassword());
 			statement.setString(4, employee.getDOB());
 			statement.setString(5, employee.getJoiningDate());
 			statement.setInt(6, employee.getSalary());
@@ -135,5 +135,28 @@ public class EmployeeRepository {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	public Employee getUserByUsername(String username) {
+		String query = "SELECT userID, fullname, username, pswd, roleName FROM `USER`, ROLE_USER where ROLE_USER.roleID = USER.roleID AND username = ?";
+		Connection connection = MySqlConnection.getInstance().getConnection();
+		try {
+			PreparedStatement statement = connection.prepareStatement(query);
+			statement.setString(1, username);
+			ResultSet result = statement.executeQuery();
+			while(result.next()) {
+				Employee employee = new Employee();
+				employee.setUserID(result.getInt("userID"));
+				employee.setFullname(result.getString("fullname"));
+				employee.setUsername(result.getString("username"));
+				employee.setPassword(result.getString("pswd"));
+				employee.setRoleName(result.getString("roleName"));
+				return employee;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		return null;
 	}
 }

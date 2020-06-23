@@ -8,6 +8,24 @@ public class Employee {
 	private String username;
 	private int salary;
 	private String joiningDate;
+	private String password;
+	private String roleName;
+	
+	public String getRoleName() {
+		return roleName;
+	}
+
+	public void setRoleName(String roleName) {
+		this.roleName = roleName;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
 	public int getUserID() {
 		return userID;
