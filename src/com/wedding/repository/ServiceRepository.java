@@ -11,8 +11,10 @@ import java.util.List;
 
 import com.google.gson.Gson;
 import com.wedding.databaseconnection.MySqlConnection;
+import com.wedding.dto.FoodPrice;
 import com.wedding.dto.ServicePrice;
 import com.wedding.models.Service;
+import com.wedding.models.ServiceReservation;
 
 public class ServiceRepository {
 	private Gson gson = new Gson();
@@ -200,5 +202,24 @@ public class ServiceRepository {
 			e.printStackTrace();
 		}
 		return null;
+	} 
+	public int getTotalServicePrice(int id) {
+		int total = 0;
+		String query = "{CALL getTotalPriceService(?)}";
+		Connection connection = MySqlConnection.getInstance().getConnection();
+		try {
+			CallableStatement statement = connection.prepareCall(query);
+			statement.setInt(1, id);
+			ResultSet res = statement.executeQuery();
+			while (res.next()) {
+				total = res.getInt("total"); 
+			}
+			
+			connection.close();
+			return total;
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
 	} 
 }

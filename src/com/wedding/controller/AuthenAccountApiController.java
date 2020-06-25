@@ -37,24 +37,31 @@ public class AuthenAccountApiController extends HttpServlet {
 		String password = req.getParameter("password");
 		Employee employee  = employeeService.getByUsername(username);
 		Gson json = new Gson();
-		if(BCrypt.checkpw(password, employee.getPassword())) {
-			req.setCharacterEncoding("UTF-8");
-			resp.setCharacterEncoding("UTF-8");
-			resp.setContentType("application/json");
-			UserDto userDto = new UserDto();
-			userDto.setUsername(employee.getUsername());
-			userDto.setFullname(employee.getFullname());
-			userDto.setAccess(BCrypt.hashpw(employee.getRoleName(), BCrypt.gensalt(13)));
-			String JSON = json.toJson(userDto);
-			PrintWriter writer = resp.getWriter();
-			writer.write(JSON);
-			writer.flush();
+		req.setCharacterEncoding("UTF-8");
+		resp.setCharacterEncoding("UTF-8");
+		resp.setContentType("application/json");
+		if(employee != null) {
+			if(BCrypt.checkpw(password, employee.getPassword())) {
+				UserDto userDto = new UserDto();
+				userDto.setUserID(employee.getUserID());
+				userDto.setUsername(employee.getUsername());
+				userDto.setFullname(employee.getFullname());
+				userDto.setAccess(BCrypt.hashpw(employee.getRoleName(), BCrypt.gensalt(13)));
+				String JSON = json.toJson(userDto);
+				PrintWriter writer = resp.getWriter();
+				writer.write(JSON);
+				writer.flush();
+			}
+			else {
+				resp.setStatus(400, "Bad Request");
+				String JSON = json.toJson("Login Failed");
+				PrintWriter writer = resp.getWriter();
+				writer.write(JSON);
+				writer.flush();
+			}
 		}
 		else {
-			req.setCharacterEncoding("UTF-8");
-			resp.setCharacterEncoding("UTF-8");
-			resp.setContentType("application/json");
-			resp.setStatus(400, "Bad Request");
+			resp.setStatus(400,"Bad Request");
 			String JSON = json.toJson("Login Failed");
 			PrintWriter writer = resp.getWriter();
 			writer.write(JSON);

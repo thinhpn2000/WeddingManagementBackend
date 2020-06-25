@@ -49,6 +49,10 @@ public class UrlConstant {
 		public static final String URL_RESERVATION_ADD = "/reservation/add";
 		public static final String URL_RESERVATION_UPDATE = "/reservation/update";
 		public static final String URL_RESERVATION_DELETE = "/reservation/delete";
+		public static final String URL_RESERVATION_PAY = "/reservation/pay";
+		
+		public static final String URL_TOTAL_REVENUE = "/totalrevenue";
+		public static final String URL_MONTH_REVENUE = "/monthrevenue";
 //		public static final String URL_EMPLOYEE_LOBBY = "/employee/lobby";
 //		public static final String URL_EMPLOYEE_FOOD = "/employee/food";
 //		public static final String URL_EMPLOYEE_SERVICE = "/employee/service";

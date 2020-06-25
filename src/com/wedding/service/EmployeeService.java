@@ -42,5 +42,8 @@ public class EmployeeService {
 	public Employee getByUsername(String username) {
 		return employeeRepository.getUserByUsername(username);
 	}
-	
+	public void updatePassword(String password, int userID) {
+		String encodePassword = BCrypt.hashpw(password, BCrypt.gensalt(13));
+		employeeRepository.updatePassword(encodePassword, userID);
+	}
 }

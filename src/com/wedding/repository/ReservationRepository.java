@@ -11,8 +11,10 @@ import java.util.List;
 import com.google.gson.Gson;
 import com.wedding.databaseconnection.MySqlConnection;
 import com.wedding.dto.FoodPrice;
+import com.wedding.dto.MonthRevenueDTO;
+import com.wedding.dto.ReservationUpdateDTO;
 import com.wedding.dto.ServicePrice;
-import com.wedding.models.Lobby;
+import com.wedding.dto.TotalRevenueDTO;
 import com.wedding.models.Reservation;
 import com.wedding.models.ReservationUpdate;
 import com.wedding.models.ServiceReservation;
@@ -23,6 +25,10 @@ public class ReservationRepository {
 
 	public Reservation convertJSONtoReservation(String JSON) {
 		return gson.fromJson(JSON, Reservation.class);
+	}
+	
+	public ReservationUpdateDTO convertJSONtoReservationDTO(String json) {
+		return gson.fromJson(json, ReservationUpdateDTO.class);
 	}
 
 	public void add(Reservation reservation) {
@@ -202,5 +208,111 @@ public class ReservationRepository {
 			e.printStackTrace();
 		}
 
+	}
+	public void updateInvoice(String listServicePrice, String listFood, int weddingID, String updateDate) {
+		String queryFood = "{CALL createListFood (?, ?, ?)}";
+		String queryService = "{CALL createListService (?, ?, ?)}";
+		Connection connection = MySqlConnection.getInstance().getConnection();
+		try {
+			CallableStatement statement = connection.prepareCall(queryFood);
+			statement.setString(1, listFood);
+			statement.setInt(2, weddingID);
+			statement.setString(3, updateDate);
+			statement.executeUpdate();
+			
+			statement = connection.prepareCall(queryService);
+			statement.setString(1, listServicePrice);
+			statement.setInt(2, weddingID);
+			statement.setString(3, updateDate);
+			statement.executeUpdate();
+			
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	public void update(ReservationUpdateDTO reservationUpdate) {
+		String query = "{CALL updateWedding (?, ?, ?, ?, ?, ?, ?, ?, ?)}";
+		Connection connection = MySqlConnection.getInstance().getConnection();
+		try {
+			CallableStatement statement = connection.prepareCall(query);
+			statement.setInt(1, reservationUpdate.getWeddingID());
+			statement.setString(2,reservationUpdate.getPhone());
+			statement.setInt(3,reservationUpdate.getBalance());
+			statement.setInt(4,reservationUpdate.getReservedTable());
+			statement.setInt(5,reservationUpdate.getTableQuantity());
+			statement.setInt(6,reservationUpdate.getTablePrice());
+			statement.setInt(7,reservationUpdate.getTotalTablePrice());
+			statement.setInt(8,reservationUpdate.getTotalServicePrice());
+			statement.setInt(9,reservationUpdate.getTotalWeddingPrice());
+			
+			statement.executeUpdate();
+			
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	public void pay(int id, int userID) {
+		String query = "{CALL pay (?, ?, ?)}";
+		Connection connection = MySqlConnection.getInstance().getConnection();
+		try {
+			CallableStatement statement = connection.prepareCall(query);
+			statement.setInt(1, id);
+			statement.setInt(2, userID);
+			statement.setString(3,java.time.LocalDate.now().toString());
+			
+			statement.executeUpdate();
+			
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	public List<TotalRevenueDTO> getTotalRevenue(int year) {
+		String query = "{CALL getTotalRevenue (?)}";
+		List<TotalRevenueDTO> listTotalRevenue = new ArrayList<TotalRevenueDTO>();
+		Connection connection = MySqlConnection.getInstance().getConnection();
+		try {
+			CallableStatement statement = connection.prepareCall(query);
+			statement.setInt(1, year);
+			ResultSet result = statement.executeQuery();
+			while(result.next()) {
+				TotalRevenueDTO totalRevenue = new TotalRevenueDTO();
+				totalRevenue.setMonth(result.getString("month"));
+				totalRevenue.setTotalRevenue(result.getInt("total"));
+				listTotalRevenue.add(totalRevenue);
+			}
+			connection.close();
+			return listTotalRevenue;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public List<MonthRevenueDTO> getMonthRevenue(int year, int month) {
+		String query = "{CALL getMonthRevenue (?, ?)}";
+		List<MonthRevenueDTO> monthRevenue = new ArrayList<MonthRevenueDTO>();
+		Connection connection = MySqlConnection.getInstance().getConnection();
+		try {
+			CallableStatement statement = connection.prepareCall(query);
+			statement.setInt(1, year);
+			statement.setInt(2, month);
+			ResultSet result = statement.executeQuery();
+			while(result.next()) {
+				MonthRevenueDTO dayRevenue = new MonthRevenueDTO();
+				dayRevenue.setDate(result.getString("Date"));
+				dayRevenue.setRevenue(result.getInt("REVENUE"));
+				dayRevenue.setAmountWedding(result.getInt("NumberOfWeddings"));
+				monthRevenue.add(dayRevenue);
+			}
+			connection.close();
+			return monthRevenue;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

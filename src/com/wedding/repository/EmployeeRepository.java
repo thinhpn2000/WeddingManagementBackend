@@ -159,4 +159,20 @@ public class EmployeeRepository {
 		}
 		return null;
 	}
+	public void updatePassword(String password, int userID) {
+		String query = "{CALL resetPassword (?, ?)}";
+		Connection connection = MySqlConnection.getInstance().getConnection();
+		try {
+			CallableStatement statement = connection.prepareCall(query);
+			
+			statement.setString(1, password);
+			statement.setInt(2, userID);
+			
+			statement.executeUpdate();
+			
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 }

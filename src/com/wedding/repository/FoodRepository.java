@@ -219,4 +219,28 @@ public class FoodRepository {
 		}
 		return null;
 	}
+	
+	public List<FoodPrice> getPriceInInvoice(int id) {
+		List<FoodPrice> foodAndPriceList = new ArrayList<FoodPrice>();
+		String query = "{CALL getPriceFoodInInvoice(?)}";
+		Connection connection = MySqlConnection.getInstance().getConnection();
+		try {
+			CallableStatement statement = connection.prepareCall(query);
+			statement.setInt(1, id);
+			ResultSet res = statement.executeQuery();
+			while (res.next()) {
+				FoodPrice foodAndprice = new FoodPrice();
+				foodAndprice.setFoodID(res.getInt("foodID"));
+				foodAndprice.setFoodPrice(res.getInt("price"));
+		
+				foodAndPriceList.add(foodAndprice);
+			}
+			
+			connection.close();
+			return foodAndPriceList;
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 }
