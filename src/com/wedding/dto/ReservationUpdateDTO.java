@@ -23,6 +23,7 @@ public class ReservationUpdateDTO {
 	
 	private List<Integer> listFoodID;
 	private List<ServiceReservation> listServiceReservation;
+	private List<ServiceReservation> listOldServiceReservation;
 	public ReservationUpdateDTO() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -130,6 +131,14 @@ public class ReservationUpdateDTO {
 
 	public void setListServiceReservation(List<ServiceReservation> listServiceReservation) {
 		this.listServiceReservation = listServiceReservation;
+	}
+
+	public List<ServiceReservation> getListOldServiceReservation() {
+		return listOldServiceReservation;
+	}
+
+	public void setListOldServiceReservation(List<ServiceReservation> listOldServiceReservation) {
+		this.listOldServiceReservation = listOldServiceReservation;
 	}
 
 }

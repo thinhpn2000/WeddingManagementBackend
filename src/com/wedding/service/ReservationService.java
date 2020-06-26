@@ -97,8 +97,12 @@ public class ReservationService {
 
 
 	public void updateReservation(ReservationUpdateDTO reservationUpdate) {
+		// delete canceled service
+		deleteCanceledService(reservationUpdate.getListOldServiceReservation(), reservationUpdate.getWeddingID());
+		
+		// add new service and re add old service
 		updateInvoice(reservationUpdate.getListServiceReservation(), reservationUpdate.getListFoodID(),
-				reservationUpdate.getWeddingID());
+				reservationUpdate.getWeddingID(), reservationUpdate.getListOldServiceReservation());
 
 		int tablePrice = calTablePrice(reservationUpdate.getListFoodID(), reservationUpdate.getWeddingID());
 		int totalServicePrice = serviceRepository.getTotalServicePrice(reservationUpdate.getWeddingID());
@@ -114,15 +118,28 @@ public class ReservationService {
 		
 		reservationRepository.update(reservationUpdate);
 	}
-
+	public void deleteCanceledService(List<ServiceReservation> listRenewServiceReservation, int weddingID) {
+		List<Integer> listOldID = reservationRepository.getOldServiceID(weddingID);
+		// get canceled service
+		for(ServiceReservation renewID : listRenewServiceReservation) {
+			for(Integer oldID : listOldID) {
+				if(oldID == renewID.getServiceID()) {
+					listOldID.remove(oldID);
+					break;
+				}
+			}
+		}
+		// delete canceled service
+		reservationRepository.deleteCanceledService(listOldID, weddingID);
+	}
 	public void updateInvoice(List<ServiceReservation> listServiceReservation, List<Integer> listFoodID,
-			int weddingID) {
-		String jsonService = gson.toJson(listServiceReservation);
+			int weddingID, List<ServiceReservation> listOldServiceReservation) {
+		
 		String jsonFood = gson.toJson(listFoodID);
 		jsonFood = jsonFood.replace("[", "");
 		jsonFood = jsonFood.replace("]", "");
 		String updateDate = java.time.LocalDate.now().toString();
-		reservationRepository.updateInvoice(jsonService, jsonFood, weddingID, updateDate);
+		reservationRepository.updateInvoice(listServiceReservation, jsonFood, weddingID, updateDate, listOldServiceReservation);
 
 	}
 	public void pay(int id, int userID) {
