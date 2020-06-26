@@ -53,10 +53,10 @@ public class EmployeeRepository {
 	
 	public List<String> getAllUsername() {
 		Connection connection = MySqlConnection.getInstance().getConnection();
-		String query = "SELECT username FROM `USER` WHERE NOT isDeleted;";
+		String query = "{CALL getAllUsername()}";
 		List<String> listUsername = new ArrayList<String>();
 		try {
-			PreparedStatement statement = connection.prepareStatement(query);
+			CallableStatement statement = connection.prepareCall(query);
 			ResultSet res = statement.executeQuery();
 			while(res.next()) {
 				String username = "";
@@ -73,12 +73,11 @@ public class EmployeeRepository {
 	}
 	
 	public void delete(int id) {
-		String query = "UPDATE `USER` SET isDeleted = ? WHERE userID = ?";
+		String query = "{CALL deteleEmployee(?)}";
 		Connection connection = MySqlConnection.getInstance().getConnection();
 		try {
-			PreparedStatement statement = connection.prepareStatement(query);
-			statement.setBoolean(1, true);
-			statement.setInt(2, id);
+			CallableStatement statement = connection.prepareCall(query);
+			statement.setInt(1, id);
 			statement.executeUpdate();
 			connection.close();
 		} catch (SQLException e) {
@@ -86,13 +85,13 @@ public class EmployeeRepository {
 			e.printStackTrace();
 		}
 	}
-	public void resetpassword(int id) {
-		String query = "UPDATE `USER` SET pswd = ? WHERE userID = ?";
+	public void resetpassword(int id, String password) {
+		String query = "{CALL resetPassword(?,?)}";
 		Connection connection = MySqlConnection.getInstance().getConnection();
 		try {
-			PreparedStatement statement = connection.prepareStatement(query);
-			statement.setInt(1, 1);
-			statement.setInt(2, id);
+			CallableStatement statement = connection.prepareCall(query);
+			statement.setInt(1, id);
+			statement.setString(2, password);
 			statement.executeUpdate();
 			connection.close();
 		} catch (SQLException e) {
@@ -101,10 +100,10 @@ public class EmployeeRepository {
 		}
 	}
 	public void add(Employee employee) {
-		String query = "INSERT INTO USER(fullname, username, pswd, DOB, joiningDate, salary, gender) VALUES(?,?,?,?,?,?,?)";
+		String query = "{CALL insertEmployee(?,?,?,?,?,?,?)}";
 		Connection connection = MySqlConnection.getInstance().getConnection();
 		try {
-			PreparedStatement statement = connection.prepareStatement(query);
+			CallableStatement statement = connection.prepareCall(query);
 			statement.setString(1, employee.getFullname());
 			statement.setString(2, employee.getUsername());
 			statement.setString(3, employee.getPassword());
@@ -121,10 +120,10 @@ public class EmployeeRepository {
 		
 	}
 	public void update(Employee employee) {
-		String query = "UPDATE `USER` SET fullname = ?, username = ?, salary = ? WHERE userID = ?";
+		String query = "{CALL updateEmployee(?,?,?,?)}";
 		Connection connection = MySqlConnection.getInstance().getConnection();
 		try {
-			PreparedStatement statement = connection.prepareStatement(query);
+			CallableStatement statement = connection.prepareCall(query);
 			statement.setString(1, employee.getFullname());
 			statement.setString(2, employee.getUsername());
 			statement.setInt(3, employee.getSalary());
@@ -137,10 +136,10 @@ public class EmployeeRepository {
 		}
 	}
 	public Employee getUserByUsername(String username) {
-		String query = "SELECT userID, fullname, username, pswd, roleName FROM `USER`, ROLE_USER where ROLE_USER.roleID = USER.roleID AND username = ?";
+		String query = "{CALL getUserByUsername(?)}";
 		Connection connection = MySqlConnection.getInstance().getConnection();
 		try {
-			PreparedStatement statement = connection.prepareStatement(query);
+			CallableStatement statement = connection.prepareCall(query);
 			statement.setString(1, username);
 			ResultSet result = statement.executeQuery();
 			while(result.next()) {
@@ -160,7 +159,8 @@ public class EmployeeRepository {
 		return null;
 	}
 	public void updatePassword(String password, int userID) {
-		String query = "{CALL resetPassword (?, ?)}";
+		
+		String query = "{CALL changePassword (?, ?)}";
 		Connection connection = MySqlConnection.getInstance().getConnection();
 		try {
 			CallableStatement statement = connection.prepareCall(query);

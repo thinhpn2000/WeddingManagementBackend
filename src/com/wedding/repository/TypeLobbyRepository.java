@@ -1,5 +1,6 @@
 package com.wedding.repository;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,11 +14,11 @@ import com.wedding.models.TypeLobby;
 public class TypeLobbyRepository {
 
 	public List<TypeLobby> getAll() {
-		String query = "SELECT * FROM TYPE_LOBBY WHERE isDeleted IS NOT NULL";
+		String query = "{CALL getAllTypeLobby()}";
 		Connection connection = MySqlConnection.getInstance().getConnection();
 		List<TypeLobby> typeLobbyList = new ArrayList<TypeLobby>();
 		try {
-			PreparedStatement prep = connection.prepareStatement(query);
+			CallableStatement prep = connection.prepareCall(query);
 			ResultSet res = prep.executeQuery();
 			while(res.next()) {
 				TypeLobby typeLobby = new TypeLobby();

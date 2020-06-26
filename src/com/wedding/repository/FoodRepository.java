@@ -190,11 +190,11 @@ public class FoodRepository {
 	}
 	public List<FoodPrice> getListFoodAndPrice() {
 		List<FoodPrice> foodAndPriceList = new ArrayList<FoodPrice>();
-		String queryInFood = "SELECT foodID,foodPrice FROM FOOD WHERE endingDate is NULL and not isDeleted";
-		String queryInUpdatedFood = "SELECT foodID,foodPrice FROM UPDATEDFOOD WHERE endingDate is NULL and not isDeleted";
+		String queryInFood = "{CALL getListFoodAndPriceInFood()}";
+		String queryInUpdatedFood = "{CALL getListFoodAndPriceInUpdatedFood()}";
 		Connection connection = MySqlConnection.getInstance().getConnection();
 		try {
-			PreparedStatement statement = connection.prepareStatement(queryInFood);
+			CallableStatement statement = connection.prepareCall(queryInFood);
 			ResultSet res = statement.executeQuery();
 			while (res.next()) {
 				FoodPrice foodAndprice = new FoodPrice();
@@ -203,7 +203,7 @@ public class FoodRepository {
 		
 				foodAndPriceList.add(foodAndprice);
 			}
-			statement = connection.prepareStatement(queryInUpdatedFood);
+			statement = connection.prepareCall(queryInUpdatedFood);
 			res = statement.executeQuery();
 			while (res.next()) {
 				FoodPrice foodAndprice = new FoodPrice();

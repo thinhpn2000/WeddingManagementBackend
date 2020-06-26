@@ -155,7 +155,6 @@ public class ReservationService {
 		for(MonthRevenueDTO day : monthRevenue) {
 			total += day.getRevenue();
 		}
-		System.out.println(total);
 		for(MonthRevenueDTO day : monthRevenue) {
 			float proportion = Math.round((float)day.getRevenue() * 100 / (float)total);
 			day.setProportion(proportion);

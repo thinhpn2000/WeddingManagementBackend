@@ -24,7 +24,9 @@ public class EmployeeService {
 		employeeRepository.delete(id);
 	}
 	public void resetpasswordUser(int id) {
-		employeeRepository.resetpassword(id);
+		String password = "1";
+		String encodePassword = BCrypt.hashpw(password, BCrypt.gensalt(13));
+		employeeRepository.resetpassword(id, encodePassword);
 	}
 	public void addEmployee(Employee employee) {
 	

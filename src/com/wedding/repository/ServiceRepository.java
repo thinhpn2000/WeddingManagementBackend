@@ -174,11 +174,11 @@ public class ServiceRepository {
 	
 	public List<ServicePrice> getListServiceAndPrice() {
 		List<ServicePrice> serviceAndPriceList = new ArrayList<ServicePrice>();
-		String queryInService = "SELECT serviceID,servicePrice FROM SERVICE WHERE endingDate is NULL and not isDeleted";
-		String queryInUpdatedService = "SELECT serviceID,servicePrice FROM UPDATEDSERVICE WHERE endingDate is NULL and not isDeleted";
+		String queryInService = "{CALL getListServiceAndPriceInService()}";
+		String queryInUpdatedService = "{CALL getListServiceAndPriceInUpdatedService()}";
 		Connection connection = MySqlConnection.getInstance().getConnection();
 		try {
-			PreparedStatement statement = connection.prepareStatement(queryInService);
+			CallableStatement statement = connection.prepareCall(queryInService);
 			ResultSet res = statement.executeQuery();
 			while (res.next()) {
 				ServicePrice serviceAndprice = new ServicePrice();
@@ -187,7 +187,7 @@ public class ServiceRepository {
 		
 				serviceAndPriceList.add(serviceAndprice);
 			}
-			statement = connection.prepareStatement(queryInUpdatedService);
+			statement = connection.prepareCall(queryInUpdatedService);
 			res = statement.executeQuery();
 			while (res.next()) {
 				ServicePrice serviceAndprice = new ServicePrice();

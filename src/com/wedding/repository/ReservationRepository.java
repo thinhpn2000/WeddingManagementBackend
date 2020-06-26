@@ -32,42 +32,41 @@ public class ReservationRepository {
 	}
 
 	public void add(Reservation reservation) {
-		String query = "INSERT INTO WEDDING(bride, groom, weddingDate, shift, phone, tableQuantity, reservedTable, weddingStatus, lobbyID, userID, tablePrice, balance, totalServicePrice, totalTablePrice, totalWeddingPrice, deposit, reservationDate) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		String query = "{CALL insertReservation(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}";
 		Connection connection = MySqlConnection.getInstance().getConnection();
 		try {
-			PreparedStatement statement = connection.prepareStatement(query);
-			statement.setString(1, reservation.getBride());
-			statement.setString(2, reservation.getGroom());
-			statement.setString(3, reservation.getWeddingDate());
-			statement.setInt(4, reservation.getShift());
-			statement.setString(5, reservation.getPhone());
-			statement.setInt(6, reservation.getTableQuantity());
-			statement.setInt(7, reservation.getReservedTable());
-			statement.setInt(8, 0);
-			statement.setInt(9, reservation.getLobbyID());
-			statement.setInt(10, reservation.getUserID());
-			statement.setInt(11, reservation.getTablePrice());
-			statement.setInt(12, reservation.getBalance());
-			statement.setInt(13, reservation.getTotalServicePrice());
-			statement.setInt(14, reservation.getTotalTablePrice());
-			statement.setInt(15, reservation.getTotalWeddingPrice());
-			statement.setInt(16, reservation.getDeposit());
-			statement.setString(17, reservation.getReservationDate());
-			statement.executeUpdate();
+			CallableStatement callStatement = connection.prepareCall(query);
+			callStatement.setString(1, reservation.getBride());
+			callStatement.setString(2, reservation.getGroom());
+			callStatement.setString(3, reservation.getWeddingDate());
+			callStatement.setInt(4, reservation.getShift());
+			callStatement.setString(5, reservation.getPhone());
+			callStatement.setInt(6, reservation.getTableQuantity());
+			callStatement.setInt(7, reservation.getReservedTable());
+			callStatement.setInt(8, 0);
+			callStatement.setInt(9, reservation.getLobbyID());
+			callStatement.setInt(10, reservation.getUserID());
+			callStatement.setInt(11, reservation.getTablePrice());
+			callStatement.setInt(12, reservation.getBalance());
+			callStatement.setInt(13, reservation.getTotalServicePrice());
+			callStatement.setInt(14, reservation.getTotalTablePrice());
+			callStatement.setInt(15, reservation.getTotalWeddingPrice());
+			callStatement.setInt(16, reservation.getDeposit());
+			callStatement.setString(17, reservation.getReservationDate());
+			callStatement.executeUpdate();
 
-			query = "SELECT weddingID FROM WEDDING WHERE bride = ? AND groom = ?  AND weddingDate = ?";
-			statement = connection.prepareStatement(query);
-			statement.setString(1, reservation.getBride());
-			statement.setString(2, reservation.getGroom());
-			statement.setString(3, reservation.getWeddingDate());
-			ResultSet res = statement.executeQuery();
+			query = "{CALL getWeddingID(?, ?, ?)}";
+			callStatement = connection.prepareCall(query);
+			callStatement.setString(1, reservation.getBride());
+			callStatement.setString(2, reservation.getGroom());
+			callStatement.setString(3, reservation.getWeddingDate());
+			ResultSet res = callStatement.executeQuery();
 			int weddingID = 0;
 			while (res.next()) {
 				weddingID = res.getInt("weddingID");
 			}
-
-			query = "{call price_in_food_invoice(?, ?, ?)}";
-			CallableStatement callStatement = connection.prepareCall(query);
+			query = "{CALL price_in_food_invoice(?, ?, ?)}";
+			callStatement = connection.prepareCall(query);
 			List<Integer> listFoodID = reservation.getListFoodID();
 			for (int i : listFoodID) {
 				callStatement.setInt(1, weddingID);
@@ -75,7 +74,7 @@ public class ReservationRepository {
 				callStatement.setString(3, reservation.getReservationDate());
 				callStatement.executeUpdate();
 			}
-			query = "{call price_in_service_invoice(?, ?, ?, ?)}";
+			query = "{CALL price_in_service_invoice(?, ?, ?, ?)}";
 			List<ServiceReservation> listServiceReservation = reservation.getListServiceReservation();
 			callStatement = connection.prepareCall(query);
 			for (ServiceReservation service : listServiceReservation) {
@@ -94,10 +93,10 @@ public class ReservationRepository {
 
 	public List<ReservationUpdate> getAll() {
 		List<ReservationUpdate> reservationUpdate = new ArrayList<ReservationUpdate>();
-		String query = "SELECT WEDDING.*, TYPE_SHIFT.shiftTypeName, LOBBY.lobbyName  FROM TYPE_SHIFT,WEDDING,LOBBY WHERE shift = shiftTypeID AND WEDDING.lobbyID = LOBBY.lobbyID AND NOT WEDDING.isDeleted";
+		String query = "{CALL getAllReservation()}";
 		Connection connection = MySqlConnection.getInstance().getConnection();
 		try {
-			PreparedStatement statement = connection.prepareStatement(query);
+			CallableStatement statement = connection.prepareCall(query);
 			ResultSet result = statement.executeQuery();
 			while (result.next()) {
 				ReservationUpdate reservation = new ReservationUpdate();
@@ -124,10 +123,10 @@ public class ReservationRepository {
 
 	public ReservationUpdate getReservationById(int id) {
 		ReservationUpdate reservation = new ReservationUpdate();
-		String query = "SELECT WEDDING.*, TYPE_SHIFT.shiftTypeName, LOBBY.lobbyName, LOBBY.maxTable, minPrice  FROM TYPE_SHIFT,WEDDING,LOBBY,TYPE_LOBBY WHERE shift = shiftTypeID AND WEDDING.lobbyID = LOBBY.lobbyID AND LOBBY.lobbyType = TYPE_LOBBY.lobbyTypeID AND NOT WEDDING.isDeleted AND weddingID = ?";
+		String query = "{CALL getReservationByID(?)}";
 		Connection connection = MySqlConnection.getInstance().getConnection();
 		try {
-			PreparedStatement statement = connection.prepareStatement(query);
+			CallableStatement statement = connection.prepareCall(query);
 			statement.setInt(1, id);
 			ResultSet result = statement.executeQuery();
 			while (result.next()) {
@@ -156,9 +155,9 @@ public class ReservationRepository {
 				reservation.setMaxTable(result.getInt("maxTable"));
 				reservation.setMinPrice(result.getInt("minPrice"));
 			}
-			query = "SELECT FOOD_INVOICE.foodID, price, foodName FROM FOOD_INVOICE, FOOD WHERE FOOD.foodID = FOOD_INVOICE.foodID AND weddingID = ? AND NOT FOOD_INVOICE.isDeleted";
+			query = "{CALL getFoodInvoiceByID(?)}";
 			List<FoodPrice> foodAndprices = new ArrayList<FoodPrice>();
-			statement = connection.prepareStatement(query);
+			statement = connection.prepareCall(query);
 			statement.setInt(1, id);
 			result = statement.executeQuery();
 			while (result.next()) {
@@ -170,8 +169,8 @@ public class ReservationRepository {
 			}
 			reservation.setListFood(foodAndprices);
 
-			query = "SELECT SERVICE_INVOICE.serviceID, price, serviceQuantity, serviceName FROM SERVICE_INVOICE, SERVICE WHERE SERVICE.serviceID = SERVICE_INVOICE.serviceID AND weddingID = ? AND NOT SERVICE_INVOICE.isDeleted";
-			statement = connection.prepareStatement(query);
+			query = "{CALL getServiceInvoiceByID(?)}";
+			statement = connection.prepareCall(query);
 			statement.setInt(1, id);
 			result = statement.executeQuery();
 			List<ServicePrice> serviceAndprices = new ArrayList<ServicePrice>();
@@ -195,12 +194,11 @@ public class ReservationRepository {
 	}
 
 	public void delete(int id) {
-		String query = "UPDATE WEDDING SET isDeleted = ? WHERE weddingID = ?";
+		String query = "{CALL deleteReservation(?)}";
 		Connection connection = MySqlConnection.getInstance().getConnection();
 		try {
-			PreparedStatement statement = connection.prepareStatement(query);
-			statement.setBoolean(1, true);
-			statement.setInt(2, id);
+			CallableStatement statement = connection.prepareCall(query);
+			statement.setInt(1, id);
 			statement.executeUpdate();
 			connection.close();
 		} catch (SQLException e) {

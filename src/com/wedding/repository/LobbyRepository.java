@@ -93,9 +93,9 @@ public class LobbyRepository {
 	public List<Lobby> checkLobby(String weddingDate, int shift) {
 		List<Lobby> listLobby = new ArrayList<Lobby>();
 		Connection connection = MySqlConnection.getInstance().getConnection();
-		String query = "SELECT LOBBY.* , lobbyTypeName, minPrice FROM LOBBY, TYPE_LOBBY WHERE lobbyType = lobbyTypeID AND NOT LOBBY.isDeleted AND lobbyID NOT IN (SELECT lobbyID FROM WEDDING WHERE shift = ? AND weddingDate = ?);";
+		String query = "{CALL checkLobby(?,?)}";
 		try {
-			PreparedStatement statement = connection.prepareStatement(query);
+			CallableStatement statement = connection.prepareCall(query);
 			statement.setInt(1, shift);
 			statement.setString(2, weddingDate);
 			ResultSet result = statement.executeQuery();
